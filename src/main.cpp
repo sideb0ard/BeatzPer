@@ -1,17 +1,16 @@
 #include <sndfile.h>
 
+#include <chrono>
 #include <filesystem>
 #include <iostream>
 #include <numeric>
+#include <thread>
 
 #include "BTrack.h"
+#include "dirmonitor.h"
 
-// #include <fstream>
 namespace fs = std::filesystem;
-
 constexpr int kLocalBufferLen = 1024;
-
-const std::string kSamplePath = "galcher.aiff";
 
 std::vector<double> GetBeatTimesFromAudioFile(std::string full_filename) {
   SNDFILE* snd_file;
@@ -44,9 +43,7 @@ std::vector<double> GetBeatTimesFromAudioFile(std::string full_filename) {
   return beat_times_ms;
 }
 
-int main() {
-  std::string full_filename = fs::current_path().string() + "/" + kSamplePath;
-  std::vector<double> beat_times_ms = GetBeatTimesFromAudioFile(full_filename);
+double EstimateBpm(const std::vector<double>& beat_times_ms) {
   std::vector<double> time_diffs;
   for (int i = 1; i < beat_times_ms.size(); i++) {
     double time_diff = beat_times_ms[i] - beat_times_ms[i - 1];
@@ -58,4 +55,34 @@ int main() {
                     time_diffs.size();
   double bpm_estimate = 1000. * 60 / avg_diff;
   std::cout << "BPM ESTIMATE:" << bpm_estimate << std::endl;
+  return bpm_estimate;
+}
+
+int main() {
+  // kSamplePath; std::vector<double> beat_times_ms =
+  // GetBeatTimesFromAudioFile(full_filename);
+  //
+  DirMonitor dm{"./MusicFiles/", std::chrono::milliseconds(1000)};
+
+  dm.Start([](std::string path_to_watch, FileStatus status) -> void {
+    if (!std::filesystem::is_regular_file(
+            std::filesystem::path(path_to_watch)) &&
+        status != FileStatus::erased) {
+      return;
+    }
+
+    switch (status) {
+      case FileStatus::created:
+        std::cout << "File created: " << path_to_watch << '\n';
+        break;
+      case FileStatus::modified:
+        std::cout << "File modified: " << path_to_watch << '\n';
+        break;
+      case FileStatus::erased:
+        std::cout << "File erased: " << path_to_watch << '\n';
+        break;
+      default:
+        std::cout << "Error! Unknown file status.\n";
+    }
+  });
 }
