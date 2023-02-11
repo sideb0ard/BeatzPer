@@ -2,10 +2,13 @@ cmake_minimum_required(VERSION 3.10)
 
 list(APPEND CMAKE_PREFIX_PATH /opt/homebrew)
 
+## MODIFY THESE TO YOUR PATHS
+set (HomebrewIncDir "/opt/homebrew/include")
 set(FFTWIncPath "/opt/homebrew/Cellar/fftw/3.3.10_1/include")
 set(FFTWLinkPath "/opt/homebrew/Cellar/fftw/3.3.10_1/lib/libfftw3.dylib")
 set(LibSampleInclude "/opt/homebrew/Cellar/libsamplerate/0.2.2/include")
 set(LibSamplePath "/opt/homebrew/Cellar/libsamplerate/0.2.2/lib/libsamplerate.dylib")
+## END MODIFICATIONS
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
@@ -22,9 +25,6 @@ set(CMAKE_CXX_STANDARD 20 CACHE STRING "The C++ standard to use")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-## MODIFY THESE TO YOUR PATHS
-
-set (HomebrewIncDir "/opt/homebrew/include")
 
 project(BeatzPer VERSION 1.0
   DESCRIPTION "BPM Detector Service"
@@ -42,6 +42,9 @@ list (REMOVE_DUPLICATES BeatzPer_INCLUDE_DIRS)
 
 set (FFTW_FLAG "-DUSE_FFTW")
 SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${FFTW_FLAG}")
+
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+ conan_basic_setup()
 
 add_executable(BeatzPer ${BeatzPer_SOURCES})
 
