@@ -1,3 +1,4 @@
+#include <BTrack.h>
 #include <sndfile.h>
 
 #include <chrono>
@@ -6,7 +7,6 @@
 #include <numeric>
 #include <thread>
 
-#include "BTrack.h"
 #include "dirmonitor.h"
 #include "httpservrrr.h"
 

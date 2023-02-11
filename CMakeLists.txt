@@ -4,10 +4,13 @@ list(APPEND CMAKE_PREFIX_PATH /opt/homebrew)
 
 ## MODIFY THESE TO YOUR PATHS
 set (HomebrewIncDir "/opt/homebrew/include")
-set(FFTWIncPath "/opt/homebrew/Cellar/fftw/3.3.10_1/include")
-set(FFTWLinkPath "/opt/homebrew/Cellar/fftw/3.3.10_1/lib/libfftw3.dylib")
-set(LibSampleInclude "/opt/homebrew/Cellar/libsamplerate/0.2.2/include")
-set(LibSamplePath "/opt/homebrew/Cellar/libsamplerate/0.2.2/lib/libsamplerate.dylib")
+set (HomebrewCellar "/opt/homebrew/Cellar")
+set(FFTWIncPath "${HomebrewCellar}/fftw/3.3.10_1/include")
+set(FFTWLinkPath "${HomebrewCellar}/fftw/3.3.10_1/lib/libfftw3.dylib")
+set(LibSampleInclude "${HomebrewCellar}/libsamplerate/0.2.2/include")
+set(LibSamplePath "${HomebrewCellar}/libsamplerate/0.2.2/lib/libsamplerate.dylib")
+set(BTRACK_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/libs/BTrack/src)
+set(BTRACK_SRC${CMAKE_CURRENT_SOURCE_DIR}/libs/BTrack/src)
 ## END MODIFICATIONS
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -30,27 +33,23 @@ project(BeatzPer VERSION 1.0
   DESCRIPTION "BPM Detector Service"
   LANGUAGES CXX)
 
-file (GLOB_RECURSE BeatzPer_SOURCES CONFIGURE_DEPENDS "src/*.cpp")
-file (GLOB_RECURSE BeatzPer_HEADERS CONFIGURE_DEPENDS "include/*.h")
-
-set (BeatzPer_INCLUDE_DIRS "")
-foreach (_headerFile ${BeatzPer_HEADERS})
-  get_filename_component(_dir ${_headerFile} PATH)
-  list (APPEND BeatzPer_INCLUDE_DIRS ${_dir})
-endforeach()
-list (REMOVE_DUPLICATES BeatzPer_INCLUDE_DIRS)
-
 set (FFTW_FLAG "-DUSE_FFTW")
 SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${FFTW_FLAG}")
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
- conan_basic_setup()
+conan_basic_setup()
 
-add_executable(BeatzPer ${BeatzPer_SOURCES})
+add_executable(BeatzPer
+  src/main.cpp
+  src/httpservrrr.cpp
+  libs/BTrack/src/BTrack.cpp
+  libs/BTrack/src/OnsetDetectionFunction.cpp
+)
 
 find_library(SNDFILE_LIB sndfile)
 
-target_include_directories(BeatzPer PRIVATE ${BeatzPer_INCLUDE_DIRS})
+target_include_directories(BeatzPer PRIVATE include)
+target_include_directories(BeatzPer PRIVATE ${BTRACK_INCLUDE})
 target_include_directories(BeatzPer PRIVATE ${HomebrewIncDir})
 target_include_directories(BeatzPer PRIVATE ${FFTWIncPath})
 target_include_directories(BeatzPer PRIVATE ${LibSampleInclude})
