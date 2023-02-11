@@ -6,19 +6,21 @@
 #include <string>
 #include <unordered_map>
 
+namespace {
+bool IsHiddenFile(const std::filesystem::directory_entry direntry) {
+  auto fname = direntry.path().filename().string();
+  if (fname.size() > 0 && fname[0] == '.') return true;
+  return false;
+}
+}  // end namespace
+
 enum class FileStatus { created, modified, erased };
 
 class DirMonitor {
  public:
   DirMonitor(std::string file_path,
              std::chrono::duration<int, std::milli> delay)
-      : file_path_{file_path}, delay_{delay} {
-    for (auto &file :
-         std::filesystem::recursive_directory_iterator(file_path)) {
-      std::cout << "Adding " << file.path().string() << std::endl;
-      paths_[file.path().string()] = std::filesystem::last_write_time(file);
-    }
-  }
+      : file_path_{file_path}, delay_{delay} {}
   ~DirMonitor() = default;
 
   void Start(const std::function<void(std::string, FileStatus)> &action) {
@@ -37,6 +39,9 @@ class DirMonitor {
 
       for (auto &file :
            std::filesystem::recursive_directory_iterator(file_path_)) {
+        if (!std::filesystem::is_regular_file(file.path()) ||
+            IsHiddenFile(file))
+          continue;
         auto current_file_last_write_time =
             std::filesystem::last_write_time(file);
         if (!paths_.contains(file.path().string())) {
