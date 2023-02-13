@@ -43,7 +43,7 @@ add_executable(BeatzPer
   src/main.cpp
   src/dirmonitor.cpp
   src/httpservrrr.cpp
-  src/bpm_extractor.cpp
+  src/audio_utils.cpp
   libs/BTrack/src/BTrack.cpp
   libs/BTrack/src/OnsetDetectionFunction.cpp
 )

@@ -1,12 +1,10 @@
-#include "bpm_extractor.h"
+#include "audio_utils.h"
 
 #include <BTrack.h>
 #include <sndfile.h>
 
 #include <iostream>
 #include <numeric>
-
-namespace bpm {
 
 constexpr int kLocalBufferLen = 1024;
 
@@ -52,31 +50,3 @@ double EstimateBpm(const std::vector<double>& beat_times_ms) {
   double bpm_estimate = 1000. * 60 / avg_diff;
   return bpm_estimate;
 }
-
-BPMExtractor::BPMExtractor() { std::cout << "YO, AM AN X TRACTOR FAN!\n"; }
-
-void BPMExtractor::UpdateKnownFiles(std::string file_path, FileStatus status) {
-  if (status == FileStatus::created) {
-    std::cout << "OH CREATED! " << file_path << std::endl;
-    std::vector<double> beat_times_ms = GetBeatTimesFromAudioFile(file_path);
-    double bpm = EstimateBpm(beat_times_ms);
-
-    known_files_.insert(std::make_pair(
-        file_path, FileTimingInfo{file_path, bpm, beat_times_ms}));
-  } else if (status == FileStatus::modified) {
-    auto file_entry = known_files_.find(file_path);
-    if (file_entry != known_files_.end()) {
-      std::cout << "Oohm found yer file:" << file_path << std::endl;
-      file_entry->second.beat_times_ms = GetBeatTimesFromAudioFile(file_path);
-      file_entry->second.bpm = EstimateBpm(file_entry->second.beat_times_ms);
-    } else {
-      std::cerr << "Woof coundae find yer file:" << file_path << std::endl;
-    }
-  } else if (status == FileStatus::erased) {
-    std::cout << "File erased: " << file_path << '\n';
-  } else {
-    std::cout << "Error! Unknown file status.\n";
-  }
-}
-
-}  // namespace bpm

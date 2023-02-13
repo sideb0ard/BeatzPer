@@ -18,9 +18,9 @@ void HTTPServer::Start() {
 
   std::cout << "Current path is " << std::filesystem::current_path()
             << '\n';  // (1)
-  auto ret = svr.set_mount_point("/", "./MusicFiles/");
+  auto ret = svr.set_mount_point("/", "./www/");
   if (!ret) {
-    std::cerr << "WOOF, NAE MOUNT POINT! Run `mkdir MusicFiles`." << std::endl;
+    std::cerr << "WOOF, NAE MOUNT POINT!" << std::endl;
     return;
   }
 
