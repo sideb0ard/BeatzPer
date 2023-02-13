@@ -10,18 +10,21 @@ void HTTPServer::Start() {
 
   Server svr;
 
-  svr.Get("/yo", [](const Request&, Response& res) {
-    res.set_content("Yo!", "text/plain");
-  });
+  // svr.Get("/yo", [](const Request&, Response& res) {
+  //   res.set_content("Yo!", "text/plain");
+  // });
 
-  svr.Get("/stop", [&](const Request&, Response&) { svr.stop(); });
+  // svr.Get("/stop", [&](const Request&, Response&) { svr.stop(); });
 
   std::cout << "Current path is " << std::filesystem::current_path()
             << '\n';  // (1)
-  auto ret = svr.set_mount_point("/MusicFiles", "./MusicFiles/");
+  auto ret = svr.set_mount_point("/", "./MusicFiles/");
   if (!ret) {
     std::cerr << "WOOF, NAE MOUNT POINT! Run `mkdir MusicFiles`." << std::endl;
+    return;
   }
+
+  std::cout << "HTTP Server started on port " << port_ << std::endl;
 
   svr.listen(ip_address_, port_);
 }

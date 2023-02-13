@@ -41,14 +41,15 @@ conan_basic_setup()
 
 add_executable(BeatzPer
   src/main.cpp
+  src/dirmonitor.cpp
   src/httpservrrr.cpp
+  src/bpm_extractor.cpp
   libs/BTrack/src/BTrack.cpp
   libs/BTrack/src/OnsetDetectionFunction.cpp
 )
 
 find_library(SNDFILE_LIB sndfile)
 
-target_include_directories(BeatzPer PRIVATE include)
 target_include_directories(BeatzPer PRIVATE ${BTRACK_INCLUDE})
 target_include_directories(BeatzPer PRIVATE ${HomebrewIncDir})
 target_include_directories(BeatzPer PRIVATE ${FFTWIncPath})
