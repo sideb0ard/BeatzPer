@@ -1,5 +1,8 @@
 #include "dirmonitor.h"
 
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
+
 #include <fstream>
 #include <sstream>
 #include <thread>
@@ -82,11 +85,17 @@ void DirMonitor::UpdateKnownFiles(std::string file_path, FileStatus status) {
 
 void DirMonitor::WriteJsonFile() {
   std::cout << "WRITING JSON!\n";
-  std::ofstream out_file;
-  out_file.open(json_temp_name);
-  std::stringstream ss;
-  ss << "YOOOOOOOOOOOO";
-  out_file << ss.rdbuf();
+  std::ofstream out_file{json_temp_name};
+
+  json j;
+  j["file_info"] = {};
+
+  for (const auto& [k, v] : known_files_) {
+    std::cout << k << std::endl;
+  }
+
+  out_file << std::setw(4) << j << std::endl;
+  std::cout << std::setw(4) << j << std::endl;
   out_file.close();
 
   std::filesystem::rename(json_temp_name, json_file_name);
