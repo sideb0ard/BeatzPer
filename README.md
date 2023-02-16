@@ -1,8 +1,8 @@
 # BeatzPer
 
-Clone this repo
+Clone this repo then..
 
-git submodule init
+`git submodule init`
 
 git submodule update
 
@@ -15,3 +15,7 @@ conan install ..
 cmake ..
 
 cmake --build .
+
+cd ..
+
+./build/bin/BeatzPer
