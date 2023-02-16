@@ -2,7 +2,8 @@
 
 Clone this repo then..
 
-`git submodule init`
+```
+git submodule init
 
 git submodule update
 
@@ -19,3 +20,4 @@ cmake --build .
 cd ..
 
 ./build/bin/BeatzPer
+```
