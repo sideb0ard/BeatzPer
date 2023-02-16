@@ -10,12 +10,6 @@ void HTTPServer::Start() {
 
   Server svr;
 
-  // svr.Get("/yo", [](const Request&, Response& res) {
-  //   res.set_content("Yo!", "text/plain");
-  // });
-
-  // svr.Get("/stop", [&](const Request&, Response&) { svr.stop(); });
-
   std::cout << "Current path is " << std::filesystem::current_path()
             << '\n';  // (1)
   auto ret = svr.set_mount_point("/", "./www/");

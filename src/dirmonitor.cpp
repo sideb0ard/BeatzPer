@@ -1,11 +1,13 @@
 #include "dirmonitor.h"
 
-#include <nlohmann/json.hpp>
-using json = nlohmann::json;
-
 #include <fstream>
+#include <nlohmann/json.hpp>
 #include <sstream>
 #include <thread>
+
+#include "defjams.h"
+
+using json = nlohmann::json;
 
 namespace {
 bool IsHiddenFile(const std::filesystem::directory_entry direntry) {
@@ -16,6 +18,8 @@ bool IsHiddenFile(const std::filesystem::directory_entry direntry) {
 
 const std::string json_temp_name{"files_temp.json"};
 const std::string json_file_name{"www/files_info.json"};
+
+const std::string host_name{"http://localhost:8080"};
 
 }  // end namespace
 
@@ -60,13 +64,17 @@ void DirMonitor::Start() {
 }
 
 void DirMonitor::UpdateKnownFiles(std::string file_path, FileStatus status) {
+  // sorry for the magic number 2! its for the two '/' between each component
+  std::string normalized_file_path =
+      file_path.substr(kMountPoint.size() + kMusicFilesLocation.size() + 2);
+  std::cout << "NORMALIZED PATH:" << normalized_file_path << std::endl;
   if (status == FileStatus::created) {
     std::cout << "OH CREATED! " << file_path << std::endl;
     std::vector<double> beat_times_ms = GetBeatTimesFromAudioFile(file_path);
     double bpm = EstimateBpm(beat_times_ms);
 
     known_files_.insert(std::make_pair(
-        file_path, FileTimingInfo{file_path, bpm, beat_times_ms}));
+        file_path, FileTimingInfo{normalized_file_path, bpm, beat_times_ms}));
   } else if (status == FileStatus::modified) {
     auto file_entry = known_files_.find(file_path);
     if (file_entry != known_files_.end()) {
@@ -74,7 +82,7 @@ void DirMonitor::UpdateKnownFiles(std::string file_path, FileStatus status) {
       file_entry->second.beat_times_ms = GetBeatTimesFromAudioFile(file_path);
       file_entry->second.bpm = EstimateBpm(file_entry->second.beat_times_ms);
     } else {
-      std::cerr << "Woof coundae find yer file:" << file_path << std::endl;
+      std::cerr << "Woof! coundae find yer file:" << file_path << std::endl;
     }
   } else if (status == FileStatus::erased) {
     std::cout << "File erased: " << file_path << '\n';
@@ -92,10 +100,17 @@ void DirMonitor::WriteJsonFile() {
 
   for (const auto& [k, v] : known_files_) {
     std::cout << k << std::endl;
+    std::cout << "MOUTPSIX:" << kMountPoint.size() << std::endl;
+    std::string url = host_name + "/" + kMusicFilesLocation + "/" + v.file_path;
+    std::cout << "URL IS " << url << std::endl;
+    json f = {{"name", v.file_path},
+              {"link", url},
+              {"bpm", v.bpm},
+              {"beat_time_ms", v.beat_times_ms}};
+    j["file_info"].push_back(f);
   }
 
   out_file << std::setw(4) << j << std::endl;
-  std::cout << std::setw(4) << j << std::endl;
   out_file.close();
 
   std::filesystem::rename(json_temp_name, json_file_name);
