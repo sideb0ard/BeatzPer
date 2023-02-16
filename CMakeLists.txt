@@ -9,9 +9,11 @@ set(FFTWIncPath "${HomebrewCellar}/fftw/3.3.10_1/include")
 set(FFTWLinkPath "${HomebrewCellar}/fftw/3.3.10_1/lib/libfftw3.dylib")
 set(LibSampleInclude "${HomebrewCellar}/libsamplerate/0.2.2/include")
 set(LibSamplePath "${HomebrewCellar}/libsamplerate/0.2.2/lib/libsamplerate.dylib")
+## END MODIFICATIONS
+
+# this is installed as a submodule - see README for details
 set(BTRACK_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/libs/BTrack/src)
 set(BTRACK_SRC${CMAKE_CURRENT_SOURCE_DIR}/libs/BTrack/src)
-## END MODIFICATIONS
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)

@@ -1,11 +1,15 @@
 # BeatzPer
 
-Clone this repo then create a music folder:
-`mkdir -p www/MusicFiles`
+Clone this repo.
 
+Install FFTW3 and libsndfile - i used homebrew.
+Set up the path to the include and libs in `CMakeLists.txt`
+
+then create a music folder:
+`mkdir -p www/MusicFiles`
 Drop a bunch of music files in there, or do it later - the server picks up on changes to the filesystem.
 
-To build the code:
+To build the code, install
 ```
 git submodule init
 
